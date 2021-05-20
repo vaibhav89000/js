@@ -15,11 +15,11 @@ user1.login();
 
 // inheritance of user class
 class Admin extends User {
-    assigntask(){
-        console.log('The task is assigned by admin');
+    deleteuser(){
+        console.log('The user is deleted by admin');
     }
 }
 
 let admin1 = new Admin('vaibhav','password');
 console.log(admin1.email,admin1.password);
-admin1.assigntask();
+admin1.deleteuser();
