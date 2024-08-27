@@ -114,3 +114,117 @@ Function.prototype.myBind = function (context = {}, ...args1) {
 };
 const bindfullnamePolyfill = fullname.myBind(user, "male");
 bindfullnamePolyfill(18);
+
+// Promise polyfill
+const promise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve(2);
+  }, 2000);
+});
+
+promise.then((res) => console.log(res)).catch((err) => console.log(err));
+
+function myPromisePolyfill(executor) {
+  let onResolve;
+  let onReject;
+  let isFulfilled = false;
+  let isRejected = false;
+  let isCalled = false;
+  let value;
+  let error;
+
+  function resolve(val) {
+    isFulfilled = true;
+    value = val;
+    if (typeof onResolve === "function" && !isCalled) {
+      isCalled = true;
+      onResolve(val);
+    }
+  }
+
+  function reject(err) {
+    isRejected = true;
+    error = err;
+    if (typeof onReject === "function" && !isCalled) {
+      isCalled = true;
+      onReject(err);
+    }
+  }
+
+  this.then = function (thenHandler) {
+    onResolve = thenHandler;
+    if (isFulfilled && !isCalled) {
+      onResolve(value);
+      isCalled = true;
+    }
+    return this;
+  };
+  this.catch = function (errorHandler) {
+    onReject = errorHandler;
+    if (isRejected && !isCalled) {
+      onReject(error);
+      isCalled = true;
+    }
+    return this;
+  };
+
+  executor(resolve, reject);
+}
+
+myPromisePolyfill.resolve = (val) => {
+  return new myPromisePolyfill(function executor(resolve, reject) {
+    resolve(val);
+  });
+};
+myPromisePolyfill.reject = (val) => {
+  return new myPromisePolyfill(function executor(resolve, reject) {
+    reject(val);
+  });
+};
+
+const newPromise = new myPromisePolyfill((resolve, reject) => {
+  setTimeout(() => {
+    resolve(3);
+  }, 2000);
+});
+
+newPromise
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+myPromisePolyfill.resolve(4).then((res) => console.log(res));
+myPromisePolyfill.reject(2).catch((res) => console.log(res));
+
+// Promiseall polyfill
+myPromisePolyfill.all = function (promises) {
+  return new myPromisePolyfill(function executor(resolve, reject) {
+    let cnt = 0;
+    let res = [];
+
+    if (promises.length === 0) {
+      resolve(promises);
+      return;
+    }
+    for (let i = 0; i < promises.length; i++) {
+      promises[i]
+        .then((val) => {
+          onDone(i, val);
+        })
+        .catch((err) => reject(err));
+    }
+    function onDone(i, val) {
+      res[i] = val;
+      ++cnt;
+      if (cnt === promises.length) {
+        resolve(res);
+      }
+    }
+  });
+};
+
+myPromisePolyfill.all([promise, promise]).then((res) => console.log(res));
+
+//
