@@ -227,4 +227,52 @@ myPromisePolyfill.all = function (promises) {
 
 myPromisePolyfill.all([promise, promise]).then((res) => console.log(res));
 
-//
+// Debounce polyfill
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.querySelector(".increment_btn");
+  const btnCountElement = document.querySelector(".increment_pressed");
+  const incrementCountElement = document.querySelector(".increment_count");
+
+  var btnCount = 0;
+  var incrementCount = 0;
+
+  const myDebounce = (cb, d) => {
+    let timer;
+    return function (...args) {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        cb(...args);
+      }, d);
+    };
+  };
+
+  const debounceCount = myDebounce(() => {
+    incrementCountElement.innerHTML = ++incrementCount;
+  }, 2000);
+
+  const myThrottle = (cb, d) => {
+    var flag = true;
+    return function (...args) {
+      if (!flag) return;
+      flag = false;
+      timer = setTimeout(() => {
+        flag = true;
+        cb(...args);
+      }, d);
+    };
+  };
+
+  const throttleCount = myThrottle(() => {
+    incrementCountElement.innerHTML = ++incrementCount;
+  }, 2000);
+
+  btn.addEventListener("click", () => {
+    console.log("clicked");
+    btnCountElement.innerHTML = ++btnCount;
+
+    // debounceCount();
+    throttleCount();
+  });
+});
+
+// Throttling
