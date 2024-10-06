@@ -1,5 +1,5 @@
-function createSetTimout() {
-  var timerId = 0;
+export default function createSetTimout() {
+  var timerId = 1;
   var timerMapper = {};
 
   function setTimoutPolyfill(cb, delay, ...args) {
@@ -27,7 +27,7 @@ function createSetTimout() {
 }
 
 const { setTimoutPolyfill, clearTimeoutPolyfill } = createSetTimout();
-console.log("start");
+console.log("start timeout");
 setTimoutPolyfill(
   (name) => {
     console.log("setTimeout completed");
@@ -36,4 +36,4 @@ setTimoutPolyfill(
   1000,
   "jane"
 );
-console.log("End");
+console.log("End timeout");
