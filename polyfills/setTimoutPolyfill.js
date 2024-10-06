@@ -9,7 +9,7 @@ function createSetTimout() {
     function timoutRecursiveFunc() {
       if (!timerMapper[id]) return;
       if (Date.now() > start + delay) {
-        // cb(); we can use this but if want to give args also blow way is need to be used
+        // cb(); we can use cb() but if we want to give args also, below way is need to be used
         cb.apply(this, args);
       } else {
         requestIdleCallback(timoutRecursiveFunc);
